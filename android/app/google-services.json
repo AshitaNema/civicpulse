@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "927116441456",
+    "project_id": "civicpulse-507101",
+    "storage_bucket": "civicpulse-507101.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:927116441456:android:faca2c4aaa4075f61941b5",
+        "android_client_info": {
+          "package_name": "com.example.civicpulse"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCYeLT0cO2QwA8b53e6pzuxo2U0ma_lPOU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
