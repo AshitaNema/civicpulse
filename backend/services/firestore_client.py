@@ -16,14 +16,14 @@ class FirestoreClient:
     async def get_report(self, report_id: str) -> Optional[Dict[str, Any]]:
         if not self.db:
             return None
-        doc = self.db.collection("reports").document(report_id).get()
+        doc = self.db.collection(settings.FIRESTORE_COLLECTION_REPORTS).document(report_id).get()
         return doc.to_dict() if doc.exists else None
 
     async def update_report(self, report_id: str, updates: Dict[str, Any]) -> bool:
         if not self.db:
             return True
         try:
-            self.db.collection("reports").document(report_id).update(updates)
+            self.db.collection(settings.FIRESTORE_COLLECTION_REPORTS).document(report_id).update(updates)
             return True
         except Exception as e:
             logger.error(f"Error updating report {report_id}: {e}")
@@ -49,7 +49,7 @@ class FirestoreClient:
             max_lng = longitude + radius_degrees
 
             query = (
-                self.db.collection("reports")
+                self.db.collection(settings.FIRESTORE_COLLECTION_REPORTS)
                 .where("issueType", "==", issue_type)
                 .where("latitude", ">=", min_lat)
                 .where("latitude", "<=", max_lat)
@@ -75,7 +75,7 @@ class FirestoreClient:
             return {"deptId": "dept_default", "name": "General Public Works"}
         try:
             query = (
-                self.db.collection("departments")
+                self.db.collection(settings.FIRESTORE_COLLECTION_DEPARTMENTS)
                 .where("wardCoverage", "array_contains", ward)
                 .limit(5)
             )
@@ -87,5 +87,15 @@ class FirestoreClient:
         except Exception as e:
             logger.error(f"Error fetching department for ward {ward}: {e}")
             return None
+
+    async def write_prediction(self, prediction_id: str, data: Dict[str, Any]) -> bool:
+        if not self.db:
+            return True
+        try:
+            self.db.collection(settings.FIRESTORE_COLLECTION_PREDICTIONS).document(prediction_id).set(data)
+            return True
+        except Exception as e:
+            logger.error(f"Error writing prediction {prediction_id}: {e}")
+            return False
 
 firestore_client = FirestoreClient()

@@ -66,5 +66,11 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>NSCameraUsageDescription</key>
+	<string>CivicPulse needs camera access to photograph civic issues</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>CivicPulse needs your location to geotag the civic issue</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>CivicPulse needs photo library access</string>
 </dict>
 </plist>

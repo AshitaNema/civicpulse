@@ -1,24 +1,26 @@
 import 'dart:io';
+import 'package:firebase_storage/firebase_storage.dart';
 
-/// Cloud Storage Service for Firebase Photo Uploads
 class StorageService {
-  StorageService();
+  final FirebaseStorage _storage = FirebaseStorage.instance;
 
-  /// Uploads issue photo and returns public/signed URL
-  Future<String> uploadIssuePhoto({
-    required File file,
-    required String reportId,
-    bool isAfterPhoto = false,
+  Future<String> uploadPhoto(
+    File photo,
+    String reportId, {
+    String type = 'before',
   }) async {
     try {
-      // Path format: reports/{reportId}/initial.jpg or reports/{reportId}/resolved.jpg
-      final fileName = isAfterPhoto ? 'resolved.jpg' : 'initial.jpg';
-      final storagePath = 'reports/$reportId/$fileName';
-
-      // Implementation hooks into FirebaseStorage.instance.ref().child(storagePath).putFile(file)
-      return 'https://storage.googleapis.com/civicpulse-507101.firebasestorage.app/$storagePath';
+      final path = 'reports/$reportId/$type.jpg';
+      final ref = _storage.ref().child(path);
+      final uploadTask = ref.putFile(
+        photo,
+        SettableMetadata(contentType: 'image/jpeg'),
+      );
+      final snapshot = await uploadTask;
+      final downloadUrl = await snapshot.ref.getDownloadURL();
+      return downloadUrl;
     } catch (e) {
-      throw Exception('Failed to upload photo: $e');
+      throw Exception('Failed to upload photo ($type): ${e.toString()}');
     }
   }
 }
