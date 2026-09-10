@@ -68,7 +68,30 @@ class _ReportScreenState extends State<ReportScreen> {
     }
   }
 
-  Future<void> _pickImage() async {
+  Future<void> _pickFromCamera() async {
+    try {
+      final pickedFile = await _picker.pickImage(
+        source: ImageSource.camera,
+        imageQuality: 70,
+      );
+      if (pickedFile != null) {
+        setState(() {
+          _photo = File(pickedFile.path);
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to open camera: ${e.toString()}'),
+            backgroundColor: Colors.redAccent,
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _pickFromGallery() async {
     try {
       final pickedFile = await _picker.pickImage(
         source: ImageSource.gallery,
@@ -83,7 +106,7 @@ class _ReportScreenState extends State<ReportScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to open camera: ${e.toString()}'),
+            content: Text('Failed to open gallery: ${e.toString()}'),
             backgroundColor: Colors.redAccent,
           ),
         );
@@ -191,6 +214,39 @@ class _ReportScreenState extends State<ReportScreen> {
     }
   }
 
+  Widget _photoSourceButton({
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+    required Color accentColor,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+        decoration: BoxDecoration(
+          color: accentColor.withValues(alpha: 0.12),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: accentColor.withValues(alpha: 0.5)),
+        ),
+        child: Column(
+          children: [
+            Icon(icon, color: accentColor, size: 32),
+            const SizedBox(height: 6),
+            Text(
+              label,
+              style: TextStyle(
+                color: accentColor,
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     const primaryDark = Color(0xFF1a1a2e);
@@ -230,45 +286,62 @@ class _ReportScreenState extends State<ReportScreen> {
                   // Middle: Photo Capture Area
                   Expanded(
                     child: _photo == null
-                        ? GestureDetector(
-                            onTap: _pickImage,
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: const Color(0xFF16213e),
-                                borderRadius: BorderRadius.circular(16),
-                                border: Border.all(
-                                  color: accentBlue.withValues(alpha: 0.6),
-                                  width: 2,
-                                  style: BorderStyle.solid,
+                        ? Container(
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF16213e),
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(
+                                color: accentBlue.withValues(alpha: 0.6),
+                                width: 2,
+                                style: BorderStyle.solid,
+                              ),
+                            ),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Icon(
+                                  Icons.add_photo_alternate_outlined,
+                                  size: 64,
+                                  color: accentBlue,
                                 ),
-                              ),
-                              child: const Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.camera_alt_outlined,
-                                    size: 64,
-                                    color: accentBlue,
+                                const SizedBox(height: 16),
+                                const Text(
+                                  'Add a photo of the issue',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w600,
                                   ),
-                                  SizedBox(height: 16),
-                                  Text(
-                                    'Tap to capture issue',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w600,
+                                ),
+                                const SizedBox(height: 6),
+                                const Text(
+                                  'Potholes, garbage, lights, leaks, etc.',
+                                  style: TextStyle(
+                                    color: Colors.white54,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                                const SizedBox(height: 28),
+                                // ── Camera & Gallery buttons ──
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    _photoSourceButton(
+                                      icon: Icons.camera_alt_outlined,
+                                      label: 'Camera',
+                                      onTap: _pickFromCamera,
+                                      accentColor: accentBlue,
                                     ),
-                                  ),
-                                  SizedBox(height: 6),
-                                  Text(
-                                    'Potholes, garbage, lights, leaks, etc.',
-                                    style: TextStyle(
-                                      color: Colors.white54,
-                                      fontSize: 14,
+                                    const SizedBox(width: 16),
+                                    _photoSourceButton(
+                                      icon: Icons.photo_library_outlined,
+                                      label: 'Gallery',
+                                      onTap: _pickFromGallery,
+                                      accentColor: const Color(0xFFb794f4),
                                     ),
-                                  ),
-                                ],
-                              ),
+                                  ],
+                                ),
+                              ],
                             ),
                           )
                         : Column(
@@ -284,19 +357,42 @@ class _ReportScreenState extends State<ReportScreen> {
                                 ),
                               ),
                               const SizedBox(height: 12),
-                              TextButton.icon(
-                                onPressed: _pickImage,
-                                icon: const Icon(
-                                  Icons.refresh,
-                                  color: accentBlue,
-                                ),
-                                label: const Text(
-                                  'Retake Photo',
-                                  style: TextStyle(
-                                    color: accentBlue,
-                                    fontSize: 16,
+                              // Retake row with both options
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  TextButton.icon(
+                                    onPressed: _pickFromCamera,
+                                    icon: const Icon(
+                                      Icons.camera_alt_outlined,
+                                      color: accentBlue,
+                                      size: 18,
+                                    ),
+                                    label: const Text(
+                                      'Camera',
+                                      style: TextStyle(
+                                        color: accentBlue,
+                                        fontSize: 14,
+                                      ),
+                                    ),
                                   ),
-                                ),
+                                  const SizedBox(width: 8),
+                                  TextButton.icon(
+                                    onPressed: _pickFromGallery,
+                                    icon: const Icon(
+                                      Icons.photo_library_outlined,
+                                      color: Color(0xFFb794f4),
+                                      size: 18,
+                                    ),
+                                    label: const Text(
+                                      'Gallery',
+                                      style: TextStyle(
+                                        color: Color(0xFFb794f4),
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ],
                           ),

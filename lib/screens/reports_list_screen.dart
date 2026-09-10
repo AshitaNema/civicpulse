@@ -1,6 +1,6 @@
 import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -191,11 +191,7 @@ class _ReportsListScreenState extends State<ReportsListScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
-                    Icons.inbox_outlined,
-                    size: 64,
-                    color: Colors.white38,
-                  ),
+                  Icon(Icons.inbox_outlined, size: 64, color: Colors.white38),
                   SizedBox(height: 16),
                   Text(
                     'No reports yet',
@@ -208,10 +204,7 @@ class _ReportsListScreenState extends State<ReportsListScreen> {
                   SizedBox(height: 8),
                   Text(
                     'Report issues in your neighborhood to see them here',
-                    style: TextStyle(
-                      color: Colors.white38,
-                      fontSize: 14,
-                    ),
+                    style: TextStyle(color: Colors.white38, fontSize: 14),
                   ),
                 ],
               ),
@@ -317,7 +310,10 @@ class _ReportsListScreenState extends State<ReportsListScreen> {
                           decoration: BoxDecoration(
                             color: severityColor.withValues(alpha: 0.15),
                             borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: severityColor, width: 0.8),
+                            border: Border.all(
+                              color: severityColor,
+                              width: 0.8,
+                            ),
                           ),
                           child: Text(
                             severity.toUpperCase(),
@@ -391,7 +387,8 @@ class _ReportsListScreenState extends State<ReportsListScreen> {
                           vertical: 6,
                         ),
                         decoration: BoxDecoration(
-                          color: const Color(0xFF68d391).withValues(alpha: 0.15),
+                          color: const Color(0xFF68d391)
+                              .withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(8),
                           border: Border.all(color: const Color(0xFF68d391)),
                         ),
@@ -419,7 +416,8 @@ class _ReportsListScreenState extends State<ReportsListScreen> {
                           vertical: 6,
                         ),
                         decoration: BoxDecoration(
-                          color: const Color(0xFFfc8181).withValues(alpha: 0.15),
+                          color: const Color(0xFFfc8181)
+                              .withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(8),
                           border: Border.all(color: const Color(0xFFfc8181)),
                         ),
@@ -466,7 +464,9 @@ class _ReportsListScreenState extends State<ReportsListScreen> {
               debugPrint('[DEBUG FAB] No reports found in Firestore.');
               if (context.mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('No reports found in Firestore')),
+                  const SnackBar(
+                    content: Text('No reports found in Firestore'),
+                  ),
                 );
               }
               return;
@@ -481,7 +481,9 @@ class _ReportsListScreenState extends State<ReportsListScreen> {
             final ward = (data['ward'] ?? 'unknown').toString();
 
             debugPrint('[DEBUG FAB] 📦 Most recent report: $reportId');
-            debugPrint('[DEBUG FAB] issueType=$issueType, ward=$ward, lat=$lat, lon=$lon');
+            debugPrint(
+              '[DEBUG FAB] issueType=$issueType, ward=$ward, lat=$lat, lon=$lon',
+            );
 
             await _firestoreService.triggerAgentPipeline(
               reportId,
@@ -494,7 +496,9 @@ class _ReportsListScreenState extends State<ReportsListScreen> {
             if (context.mounted) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text('🚀 Pipeline triggered for $reportId — check logs'),
+                  content: Text(
+                    '🚀 Pipeline triggered for $reportId — check logs',
+                  ),
                   backgroundColor: const Color(0xFF553C9A),
                 ),
               );
