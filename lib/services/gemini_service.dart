@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
@@ -16,7 +17,9 @@ class GeminiService {
     try {
       final apiKey = dotenv.env['GEMINI_API_KEY'];
       if (apiKey == null || apiKey.isEmpty) {
-        debugPrint('[GeminiService] ❌ GEMINI_API_KEY is missing or empty in .env');
+        debugPrint(
+          '[GeminiService] ❌ GEMINI_API_KEY is missing or empty in .env',
+        );
         return defaultFallback;
       }
       debugPrint('[GeminiService] ✅ API key loaded (length: ${apiKey.length})');
@@ -25,7 +28,7 @@ class GeminiService {
       final base64Image = base64Encode(bytes);
 
       final url = Uri.parse(
-        'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=$apiKey',
+        'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=$apiKey',
       );
 
       final requestBody = jsonEncode({
@@ -33,14 +36,10 @@ class GeminiService {
           {
             'parts': [
               {
-                'inline_data': {
-                  'mime_type': 'image/jpeg',
-                  'data': base64Image,
-                },
+                'inline_data': {'mime_type': 'image/jpeg', 'data': base64Image},
               },
               {
-                'text':
-                    'You are a civic issue classifier. Look at this image and return ONLY a valid JSON object with no markdown, no explanation, just JSON: {"issueType": "pothole|garbage|streetlight|leakage|road_damage", "severity": "low|medium|critical", "confidence": 0.0-1.0, "description": "max 15 words"}',
+                'text': 'You are a civic issue classifier. Look at this image and return ONLY a valid JSON object with no markdown, no explanation, just JSON: {"issueType": "pothole|garbage|streetlight|leakage|road_damage", "severity": "low|medium|critical", "confidence": 0.0-1.0, "description": "max 15 words"}',
               },
             ],
           },
@@ -54,7 +53,9 @@ class GeminiService {
       );
 
       if (response.statusCode != 200) {
-        debugPrint('[GeminiService] ❌ Gemini API error — status: ${response.statusCode}');
+        debugPrint(
+          '[GeminiService] ❌ Gemini API error — status: ${response.statusCode}',
+        );
         debugPrint('[GeminiService] ❌ Response body: ${response.body}');
         return defaultFallback;
       }
